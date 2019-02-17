@@ -28,7 +28,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
     protected function registerBladeDirectives()
     {
         Blade::directive('vue_component', function (string $component) {
-            return "<?php echo \app('VueComponentManager')->renderComponent({$component}); ?>";
+            return "<?php echo \app('VueComponentManager')->getComponent({$component}); ?>";
         });
     }
 }

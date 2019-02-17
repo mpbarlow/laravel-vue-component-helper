@@ -32,12 +32,11 @@ class VueComponent
     public function render()
     {
         $tagName = \kebab_case($this->name);
-        $propString = \json_encode($this->props);
 
         $output = "<{$tagName}";
 
         if ($this->props !== null) {
-            $output .= " v-bind=\"{$this->escape($propString)}\"";
+            $output .= " v-bind=\"{$this->escape(\json_encode($this->props))}\"";
         }
 
         $output .= "></{$tagName}>";
@@ -46,7 +45,7 @@ class VueComponent
     }
 
     /**
-     * Escape any double quotes present in the props object.
+     * Escape any double quotes present in the props JSON.
      *
      * @param string $props
      * @return mixed
@@ -54,5 +53,13 @@ class VueComponent
     protected function escape(string $props)
     {
         return \str_replace('"', '&quot;', $props);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->render();
     }
 }

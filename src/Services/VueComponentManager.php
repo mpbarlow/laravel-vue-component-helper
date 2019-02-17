@@ -7,7 +7,7 @@ use Mpbarlow\LaravelVueComponentHelper\Exceptions\ComponentNotRegisteredExceptio
 
 class VueComponentManager
 {
-    /** @var array The component and props to render when no name is supplied. */
+    /** @var VueComponent The component to render when no name is supplied. */
     protected $defaultComponent;
 
     /** @var array The list of available components and their props. */
@@ -31,7 +31,7 @@ class VueComponentManager
      */
     public function register(string $component, array $data, $from = null)
     {
-        $this->registeredComponents[$component] = $data;
+        $this->registeredComponents[$component] = new VueComponent($component, $data);
 
         foreach ((array)$from as $dependency) {
             $this->dependencies[] = $dependency;
@@ -67,32 +67,33 @@ class VueComponentManager
             $this->template = \config('vue_helper.default_template');
         }
 
-        $this->defaultComponent[$component] = $props;
+        $this->defaultComponent = new VueComponent($component, $props);
 
         return \view($this->template, $this->templateData);
     }
 
     /**
-     * Draw the specified component.
+     * Fetch the specified component.
      *
-     * @param string $component The name of the Vue component to render.
+     * @param string $component The name of the component to get.
      * @return string
      * @throws ComponentNotRegisteredException
      */
-    public function renderComponent(string $component = '')
+    public function getComponent(string $component = '')
     {
-        $propsList = $this->registeredComponents;
-
+        // Load the default component if no name is provided.
         if ($component === '') {
-            // Load the default component if no name is provided.
-            $component = \array_key_last($this->defaultComponent);
-            $propsList = $this->defaultComponent;
+            if ($this->defaultComponent === null) {
+                throw new ComponentNotRegisteredException('default');
+            }
+
+            return $this->defaultComponent;
         }
 
-        if (! \array_key_exists($component, $propsList)) {
+        if (! \array_key_exists($component, $this->registeredComponents)) {
             throw new ComponentNotRegisteredException($component);
         }
 
-        return (new VueComponent($component, $propsList[$component]))->render();
+        return $this->registeredComponents[$component];
     }
 }
