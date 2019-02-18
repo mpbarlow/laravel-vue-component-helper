@@ -4,12 +4,13 @@ namespace Mpbarlow\LaravelVueComponentHelper;
 
 
 use Illuminate\Support\Facades\Blade;
-use Mpbarlow\LaravelVueComponentHelper\Services\VueComponentManager;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
+    const BINDING = 'VueComponentManager';
+
     public $singletons = [
-        'VueComponentManager' => VueComponentManager::class
+        self::BINDING => VueComponentManager::class
     ];
 
     public function boot()
@@ -28,7 +29,26 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
     protected function registerBladeDirectives()
     {
         Blade::directive('vue_component', function (string $component) {
-            return "<?php echo \app('VueComponentManager')->getComponent({$component}); ?>";
+            return "<?php echo \app('" . self::BINDING . "')->get('{$component}')->inject(); ?>";
+        });
+
+        Blade::directive('vue_mount', function (string $mountDirective) {
+            $args = \collect(\explode(',', $mountDirective))
+                ->map(function (string $arg) {
+                    return \trim($arg);
+                });
+
+            // The DOM selector to mount to
+            $to = $args->get(1, '');
+
+            // The JS variable to assign the root instance to
+            $var = $args->get(2, '');
+
+            return "<?php echo \app('" . self::BINDING . "')->get('{$args[0]}')->mount('{$to}', '{$var}'); ?>";
+        });
+
+        Blade::directive('vue_dependencies', function () {
+            return "<?php echo \app('" . self::BINDING . "')->renderDependencies(); ?>";
         });
     }
 }
