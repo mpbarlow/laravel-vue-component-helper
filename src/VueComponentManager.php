@@ -83,7 +83,7 @@ class VueComponentManager
      * @return VueComponent
      * @throws ComponentNotRegisteredException
      */
-    public function get(string $componentName = ''): VueComponent
+    public function component(string $componentName = ''): VueComponent
     {
         // Select the default component if no name is provided.
         if ($componentName === '') {
@@ -101,7 +101,7 @@ class VueComponentManager
         return $this->registeredComponents[$componentName];
     }
 
-    public function renderDependencies(): DependencyRenderer
+    public function dependencies(): DependencyRenderer
     {
         return new DependencyRenderer($this->dependencies);
     }

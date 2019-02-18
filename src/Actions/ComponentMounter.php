@@ -22,6 +22,9 @@ class ComponentMounter extends ComponentAction
     /** @var string The name of the global Vue object. */
     protected $vue;
 
+    /** @var array Additional configuration to pass to the Vue constructor. */
+    protected $additional;
+
     public function __construct(VueComponent $component, string $to = '', string $var = '')
     {
         if ($to === '') {
@@ -35,6 +38,7 @@ class ComponentMounter extends ComponentAction
         $this->to = $to;
         $this->var = $var;
         $this->vue = \config('vue_helper.vue_global');
+        $this->additional = \config('vue_helper.additional_config');
 
         parent::__construct($component);
     }
@@ -54,15 +58,28 @@ class ComponentMounter extends ComponentAction
             $propString = ", { props: {$this->component->getPropsJson()} }";
         }
 
-        $output .= <<<SCRIPT
-new {$this->vue}({
-  render: function(h) {
-    return h('{$this->component->getName()}'{$propString})
-  }
-}).\$mount('{$this->to}')\n
-SCRIPT;
-
+        $output .= "new {$this->vue}({ ";
+        $output .= $this->getAdditionalEntryPairs();
+        $output .= "render: function(h) { return h('{$this->component->getName()}'{$propString}) } ";
+        $output .= "}).\$mount('{$this->to}')\n";
         $output .= "</script>\n";
+
+        return $output;
+    }
+
+    /**
+     * Render additional configuration entries as key-value pairs to be merged into the
+     * constructor object.
+     *
+     * @return string
+     */
+    protected function getAdditionalEntryPairs(): string
+    {
+        $output = '';
+
+        foreach ($this->additional as $key => $value) {
+            $output .= "{$key}: {$value}, ";
+        }
 
         return $output;
     }

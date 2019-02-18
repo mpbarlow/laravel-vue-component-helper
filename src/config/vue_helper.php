@@ -67,6 +67,9 @@ return [
     | e.g. to specify a Vuex store called myStore, set this to
     | ['store' => 'myStore']
     |
+    | This only supports one-dimensional arrays for now, so if you need nested
+    | objects or functions, you'll need to type them out as a string.
+    |
     */
     'additional_config' => [],
 ];
