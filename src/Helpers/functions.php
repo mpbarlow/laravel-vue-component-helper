@@ -1,6 +1,6 @@
 <?php
 
-use \Mpbarlow\LaravelVueComponentHelper\Services\VueComponentManager;
+use \Mpbarlow\LaravelVueComponentHelper\VueComponentManager;
 
 if (! \function_exists('vue')) {
     /**
@@ -19,7 +19,7 @@ if (! \function_exists('vue')) {
         array $templateData = []
     ) {
         /** @var VueComponentManager $manager */
-        $manager = \app('VueComponentManager');
+        $manager = \app(VueComponentManager::class);
 
         // If we call the function with no arguments, return the manager single to chain further
         // calls onto.

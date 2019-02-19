@@ -25,7 +25,7 @@ This will copy the config file to `config/vue_helper.php`. More on that later.
 
 The easiest way to start using this package is with the global `vue()` helper function. Calling it with no arguments returns the `VueComponentManager` singleton, which is the primary way to utilise the functionality the package provides. You may also pass a component name and props to the function: when returning this from a controller (much in the same way as Laravel’s own `view()` helper), your specified component will be immediately configured, and the default view will be rendered.
 
-*Example 1: Default component*
+**Example 1: Default component**
 
 As a basic example, let’s assume you have a Vue component called UserIndex, that displays the email addresses and account creation dates of your users.
 
@@ -34,11 +34,11 @@ As a basic example, let’s assume you have a Vue component called UserIndex, th
 
 public function index()
 {
-	$users = User::all()->map(function ($user) {
-	  return [$user->email => $user->created_at];
-	})->toArray();
+  $users = User::all()->map(function ($user) {
+    return [$user->email => $user->created_at];
+  })->toArray();
 
-	return vue('UserIndex', ['users' => $users]);
+  return vue('UserIndex', ['users' => $users]);
 }
 ```
 
@@ -50,15 +50,15 @@ The package provides several Blade directives for outputting components. Let’s
 <!-- layout.blade.php -->
 
 <div id="app">
-	@vue_component
+  @vue_component
 </div>
 ```
 
 Easy! Under the hood, this will be converted to:
 
-```html
+```vue
 <div id="app">
-	<user-index v-bind="{ users: [{ email: date }, ...] }"></user-index>
+  <user-index v-bind="{ users: [{ email: date }, ...] }"></user-index>
 </div>
 ```
 
@@ -76,7 +76,7 @@ and a Facade is provided if that’s more your style:
 {!! Vue::component()->inject() !!}
 ```
 
-*Example 2: Named components*
+**Example 2: Named components**
 
 Of course, you’re not just limited to one component. Returning a component via the `vue()` helper function will register it as the default, but you can also register any number of components and refer back to them by name in your template:
 
@@ -85,10 +85,11 @@ Of course, you’re not just limited to one component. Returning a component via
 
 public function index()
 {
-	vue()->register('UserIndex', ['users' => $users]);
-	vue()->register('AnotherComponent')
+  vue()
+    ->register('UserIndex', ['users' => $users]);
+    ->register('AnotherComponent')
 
-	return view('layout');
+  return view('layout');
 }
 ```
 
@@ -96,16 +97,16 @@ public function index()
 <!-- layout.blade.php -->
 
 <div id="app">
-	@vue_component(UserIndex)
-	@vue_component(AnotherComponent)
+  @vue_component(UserIndex)
+  @vue_component(AnotherComponent)
 </div>
 ```
 
-::Be careful::: Custom Blade directives may look like PHP function calls, but the contents of the parentheses are parsed as a single unit and sent as a string to the handling function. Long story short: don’t add quotes around your component name!
+**Be careful**: Custom Blade directives may look like PHP function calls, but the contents of the parentheses are parsed as a single unit and sent as a string to the handling function. Long story short: don’t add quotes around your component name!
 
-*Example 3: Component mounting*
+**Example 3: Component mounting**
 
-What if you’re using precompiled Vue components, and mounting directly to a DOM element via a render function? No problem:
+What if you’re using precompiled Vue components, and mounting directly to a DOM element via a render function? No problem, just use the `@vue_mount` directive:
 
 ```html
 <!-- layout.blade.php -->
@@ -115,7 +116,7 @@ What if you’re using precompiled Vue components, and mounting directly to a DO
 @vue_mount
 ```
 
-This directive will be converted to:
+This will be converted to:
 
 ```html
 <!-- layout.blade.php -->
@@ -123,11 +124,11 @@ This directive will be converted to:
 <div id="app"></div>
 <script src="js/app.js"></script>
 <script>
-	new Vue({
-	  render: function(h) {
+  new Vue({
+    render: function(h) {
       return h('UserIndex', { props: { users: [{ email: date }, ...] } })
-	  }
-	}).$mount('#app')
+    }
+  }).$mount('#app')
 </script>
 ```
 
@@ -153,17 +154,17 @@ would result in:
 <div id="root"></div>
 <script src="js/app.js"></script>
 <script>
-	var app = new Vue({
-	  render: function(h) {
+  var app = new Vue({
+    render: function(h) {
       return h('UserIndex', { props: { users: [{ email: date }, ...] } })
-	  }
-	}).$mount('#root')
+    }
+  }).$mount('#root')
 </script>
 ```
 
-::Be careful::: For exactly the same reasons as above, care must be taken when passing “arguments” to custom Blade directives. As well as avoiding quotes, if you wish to pass any argument you must pass them all up to and including the last argument specified, even if some arguments are an empty string. For example, if you wish to specify the variable for the root Vue instance, but wish to use the default component and mount elements, you would use `@vue_mount(, , app)` . Somewhat silly, but something we must put up with when using Blade directives :)
+**Be careful**: For exactly the same reasons as above, care must be taken when passing “arguments” to custom Blade directives. As well as avoiding quotes, if you wish to pass any argument you must pass them all, up to and including the last argument specified, even if some arguments are an empty string. For example, if you wish to specify the variable for the root Vue instance, but wish to use the default component and mount elements, you would call `@vue_mount(, , app)` . Somewhat silly, but something we have to put up with when using Blade directives :)
 
-*Example 4: Extra dependencies*
+**Example 4: Extra dependencies**
 
 What if the component you want to use is loaded into Vue in a JavaScript file that is not part of your normal app bundle? When using the `register()` method to configure a component, you may pass a string or an array of strings as a third argument. This is a list of JavaScripts that should be included on the page. By default these will be passed through Laravel Mix’s `mix()` function, so versioning is handled for you automatically:
 
@@ -178,24 +179,209 @@ public function index()
 }
 ```
 
-Then, simply use the `@vue_dependencies` directive to load the script(s) on the page. Don’t forget to make sure they’re included before Vue is instantiated!
+Then, simply use the `@vue_dependencies` directive to load the script(s) on the page. Don’t forget to include them before Vue is instantiated!
 
 ```html
 <!-- layout.blade.php -->
 
 <div id="root"></div>
 <script src="js/app.js"></script>
-@vue_directives
+@vue_dependencies
 @vue_mount
 ```
 
 ### A Note on Registering Components with `Vue.component()`
 
-Because of the wide variety of ways components can be registered with Vue via `Vue.component()` (objects fetched via `import`s with ES6 modules, `require()` calls, references to objects in the current context, Webpack’s dynamic `import()` statement), and the fact that this is very often done in the build step rather than in the browser, making sure that the components you want to use are correctly registered with Vue is left up to you for now.
+Because of the wide variety of ways components can be registered with Vue via `Vue.component()` (objects fetched via `import`s with ES6 modules, `require()` calls, references to objects in the current context, Webpack’s dynamic `import()` statement, inline template strings), and the fact that this is very often done in the build step rather than in the browser, making sure that the components you want to use are known to Vue is left up to you for now.
 
 If you are using Webpack, setting up code-splitting and registering all of your components asynchronously using dynamic `import()`s is a very straightforward way of handling it, otherwise you can include small scripts that register the component, then include them as dependencies as described above.
 
 ### API
 
+**Helper function**
+
+`vue() : VueComponentManager`
+
+Call the helper function with no arguments to get the core service instance that the package provides.
+
+Of course, you may also access its methods via the facade `Vue::` if you’d prefer, or type hint it in your controller methods to auto-inject from the container, or grab it by name with `app(‘Mpbarlow\LaravelVueComponentHelper\VueComponentManager’)`. And, if you really don’t like singletons, there is nothing stopping you instantiating `VueComponentManager` yourself — you just won’t be able to use the Blade directives.
+- - - -
+
+`vue(string $componentName, array $props = [], ?string $template = null, array $templateData = []) : \Illuminate\View\View`
+
+As previously demonstrated, the helper function can also accept a number of arguments. Calling the function with any number of parameters greater than zero will result in a Blade template being rendered, so you should typically return it from your controllers if using it in this way.
+
+`string $componentName`: The name of the component that is rendered when no name is provided to the directive/render methods.
+
+`array $props = []`: The props to pass to the default component.
+
+`?string $template = null`: The name of the Blade template to render. This value is passed directly to Laravel’s `view()` function. If no value is provided, the default template specified in the config is used.
+
+`array $templateData = []`: The data to be passed to the Blade template. Again, this is passed directly through to Laravel’s `view()` function.
+- - - -
+
+**VueComponentManager**
+
+The bulk of the functionality this package offers can be found in this class. It has the following public API:
+
+`register(string $componentName, array $props = [], array|string $from = []) : self`
+
+Register a Vue component with the manager so that it may be rendered into a view.
+
+`string $componentName`: This should match exactly the name used to register the component with Vue in JavaScript. It will be automatically kebab-cased if rendered into a template.
+
+`array $props = []`: The props to pass to the component.
+
+`array|string $from = []`: A string or array of paths to JavaScript files required by the component. Unless otherwise specified in the config, these are passed through Laravel Mix’s `mix()` function to resolve version hashes etc.
+- - - -
+
+`prepareTemplate(?string $template = null, array $templateData = []) : self`
+
+Set the template path and data to pass through to Laravel’s `view()` function if using `render()`.
+- - - -
+
+`render(string $componentName, array $props = []) : \Illuminate\View\View`
+
+Register the provided component as the default, then render the default or a previously configured Blade template.
+- - - -
+
+`component(string $componentName = '') : VueComponent`
+
+Returns the instance of `VueComponent` matching the provided name. If no name is supplied, the default component is returned.
+- - - -
+
+`dependencies() : DependencyRenderer`
+
+Returns an instance of `DependencyRenderer`, which can be used to output the JavaScript dependencies as `<script>` tags.
+- - - -
+
+**VueComponent**
+
+This class encapsulates a registered component, and can be used to render or mount the component in your HTML template.
+
+`getName() : string`
+
+Return the component name.
+- - - -
+
+`getTagName() : string`
+
+Return the component name in kebab-case, suitable for use as a custom HTML element.
+- - - -
+
+`getProps() : ?array`
+
+Return the component’s props.
+- - - -
+
+`getPropsJson(bool $escape = false) : string`
+
+Get the component’s props as a JSON string.
+
+`bool $escape = false`: If true, the string is passed through `htmlentities()` before being returned. This is required if you want to output the string within a HTML element.
+- - - -
+
+`inject() : ComponentInjector`
+
+Return this component’s injector, which can be used to insert the component as a custom HTML tag. This is the method used by the `@vue_component` directive.
+- - - -
+
+`mount(string $to = '' , string $var = '') : ComponentMounter`
+
+Return this component’s mounter, which can be used to insert the component via a render function with the Vue constructor. This is the method used by the `@vue_mount` directive.
+
+`string $to = ''`:  The selector for the DOM element that the root Vue instance should mount to. If this is not supplied, the default value in the config is used.
+
+`string $var = ''`:  The JavaScript variable name that the root Vue instance should be assigned to. If this is not supplied, the default value in the config is used. If `null` is used, the root instance is not assigned to a variable.
+- - - -
+
+**ComponentInjector**, **ComponentMounter**, and **DependencyRenderer**
+
+These classes each implement only one method: `render()`. `__toString()` also calls this function, so outputting the object directly in a template is sufficient to perform the render.
+
 ### Configuration
+
+The configuration file offers some options, as well as default values to streamline your controller code:
+
+```php
+[
+    /*
+    |-----------------------------------------------------
+    | Default Blade template
+    |-----------------------------------------------------
+    |
+    | Specify the Blade template to render (as you would pass to the view()
+    | helper or View::make()) when no explicit template is supplied.
+    | e.g. 'layout' would refer to 'resources/views/layout.blade.php'
+    |
+    */
+    'default_template' => 'layout',
+
+    /*
+    |-----------------------------------------------------
+    | Default $mount element
+    |-----------------------------------------------------
+    |
+    | The selector for the DOM element that a component should be mounted to
+    | if none is supplied.
+    |
+    */
+    'default_mount_el' => '#app',
+
+    /*
+    |-----------------------------------------------------
+    | Default variable assignment
+    |-----------------------------------------------------
+    |
+    | The default JavaScript variable that the new Vue instance is assigned to.
+    | Leave null if you don't want to assign a variable.
+    |
+    */
+    'default_variable' => null,
+
+    /*
+    |------------------------------------------------------
+    | Use Laravel Mix for dependencies
+    |------------------------------------------------------
+    |
+    | If true, any registered dependencies for a component will be wrapped in
+    | mix() calls.
+    |
+    */
+    'use_mix' => true,
+
+    /*
+    |------------------------------------------------------
+    | Vue global
+    |------------------------------------------------------
+    |
+    | The name of the global Vue object (i.e. 'new Vue(...)')
+    |
+    */
+    'vue_global' => 'Vue',
+
+    /*
+    |------------------------------------------------------
+    | Additional configuration
+    |-------------------------------------------------------
+    |
+    | Additional configuration data to pass into the Vue constructor when
+    | mounting components. If you need to register a Vuex store or Vue router,
+    | this is the place to specify it.
+    | e.g. to specify a Vuex store called myStore, set this to
+    | ['store' => 'myStore']
+    |
+    | This only supports one-dimensional arrays for now, so if you need nested
+    | objects or functions, you'll need to type them out as a string.
+    |
+    */
+    'additional_config' => [],
+];
+```
+
+### Next Steps
+
+- [ ] Tests
+- [ ] API improvements 
+- [ ] Deduplication of dependencies
 

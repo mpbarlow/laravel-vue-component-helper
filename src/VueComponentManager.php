@@ -28,26 +28,29 @@ class VueComponentManager
      * Register a Vue component, its props, and any dependencies with the manager.
      *
      * @param string            $componentName The Vue component name.
-     * @param array             $data          The Vue component's props.
+     * @param array             $props         The Vue component's props.
      * @param string|array|null $from          Any JavaScript dependencies for the component.
+     * @return VueComponentManager
      */
-    public function register(string $componentName, array $data, $from = [])
+    public function register(string $componentName, array $props = [], $from = []): self
     {
-        $this->registeredComponents[$componentName] = new VueComponent($componentName, $data);
+        $this->registeredComponents[$componentName] = new VueComponent($componentName, $props);
 
         foreach ((array)$from as $dependency) {
             $this->dependencies[] = $dependency;
         }
+
+        return $this;
     }
 
     /**
      * Set up the Blade template to be rendered.
      *
-     * @param string $template     The path to the Blade template to be rendered.
-     * @param array  $templateData Data to pass to the ViewFactory.
+     * @param string|null $template     The path to the Blade template to be rendered.
+     * @param array       $templateData Data to pass to the ViewFactory.
      * @return $this
      */
-    public function prepareTemplate(string $template, array $templateData = []): self
+    public function prepareTemplate($template = null, array $templateData = []): self
     {
         $this->template = $template;
         $this->templateData = $templateData;

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Blade;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
-    const BINDING = 'VueComponentManager';
+    const BINDING = VueComponentManager::class;
 
     public $singletons = [
         self::BINDING => VueComponentManager::class
