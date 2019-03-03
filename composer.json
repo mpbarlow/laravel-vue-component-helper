@@ -1,0 +1,44 @@
+{
+    "name": "mpbarlow/laravel-vue-component-helper",
+    "description": "Configure and return Vue components from your Laravel app",
+    "keywords": ["laravel", "vue", "vuejs", "component", "helper"],
+    "type": "library",
+    "require": {
+        "php": ">=7.0",
+        "illuminate/support": ">=5.5.0",
+        "ext-json": "*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Matt Barlow",
+            "email": "mattpeterbarlow@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Mpbarlow\\LaravelVueComponentHelper\\": "src/"
+        },
+        "files": [
+            "src/Helpers/functions.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Mpbarlow\\LaravelVueComponentHelper\\ServiceProvider"
+            ],
+            "aliases": {
+                "Vue": "Mpbarlow\\LaravelVueComponentHelper\\Facade"
+            }
+        }
+    },
+    "require-dev": {
+        "orchestra/testbench": "~3.0"
+    }
+}
