@@ -44,6 +44,22 @@ class VueComponentManager
     }
 
     /**
+     * Register a component as the default.
+     *
+     * @param string $componentName
+     * @param array  $props
+     * @param array  $from
+     * @return VueComponentManager
+     */
+    public function registerDefault(string $componentName, array $props = [], $from = []): self
+    {
+        $this->register($componentName, $props, $from);
+        $this->defaultComponent = $componentName;
+
+        return $this;
+    }
+
+    /**
      * Set up the Blade template to be rendered.
      *
      * @param string|null $template     The path to the Blade template to be rendered.
@@ -72,9 +88,7 @@ class VueComponentManager
             $this->template = \config('vue_helper.default_template');
         }
 
-        // Also register it as a named component, just in case we decide to refer to it by name.
-        $this->registeredComponents[$componentName] = new VueComponent($componentName, $props);
-        $this->defaultComponent = $componentName;
+        $this->registerDefault($componentName, $props);
 
         return \view($this->template, $this->templateData);
     }

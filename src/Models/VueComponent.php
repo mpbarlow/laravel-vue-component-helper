@@ -71,11 +71,11 @@ class VueComponent
     }
 
     /**
-     * @param string $to
-     * @param string $var
+     * @param string|null $to
+     * @param string|null $var
      * @return ComponentMounter
      */
-    public function mount(string $to = '', string $var = ''): ComponentMounter
+    public function mount($to = null, $var = null): ComponentMounter
     {
         return new ComponentMounter($this, $to, $var);
     }

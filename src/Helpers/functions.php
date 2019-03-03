@@ -15,23 +15,20 @@ if (! \function_exists('vue')) {
     function vue(
         string $component = null,
         array $props = [],
-        string $template = null,
+        $template = null,
         array $templateData = []
     ) {
         /** @var VueComponentManager $manager */
         $manager = \app(VueComponentManager::class);
 
-        // If we call the function with no arguments, return the manager single to chain further
+        // If we call the function with no arguments, return the manager singleton to chain further
         // calls onto.
         if (\func_num_args() === 0) {
             return $manager;
         }
 
-        if ($template !== null) {
-            $manager->prepareTemplate($template, $templateData);
-        }
-
-        // Otherwise render the component with provided data.
-        return $manager->render($component, $props);
+        return $manager
+            ->prepareTemplate($template, $templateData)
+            ->render($component, $props);
     }
 }

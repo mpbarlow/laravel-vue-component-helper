@@ -29,7 +29,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
     protected function registerBladeDirectives()
     {
         Blade::directive('vue_component', function (string $component) {
-            return "<?php echo \app('" . self::BINDING . "')->component('{$component}')->inject(); ?>";
+            return "<?php echo \app('" . self::BINDING . "')->component({$component})->inject(); ?>";
         });
 
         Blade::directive('vue_mount', function (string $mountDirective) {
@@ -39,12 +39,12 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
                 });
 
             // The DOM selector to mount to
-            $to = $args->get(1, '');
+            $to = $args->get(1, 'null');
 
             // The JS variable to assign the root instance to
-            $var = $args->get(2, '');
+            $var = $args->get(2, 'null');
 
-            return "<?php echo \app('" . self::BINDING . "')->component('{$args[0]}')->mount('{$to}', '{$var}'); ?>";
+            return "<?php echo \app('" . self::BINDING . "')->component({$args[0]})->mount({$to}, {$var}); ?>";
         });
 
         Blade::directive('vue_dependencies', function () {

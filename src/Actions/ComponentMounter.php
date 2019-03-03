@@ -25,13 +25,18 @@ class ComponentMounter extends ComponentAction
     /** @var array Additional configuration to pass to the Vue constructor. */
     protected $additional;
 
-    public function __construct(VueComponent $component, string $to = '', string $var = '')
+    /**
+     * @param VueComponent $component
+     * @param null         $to
+     * @param null         $var
+     */
+    public function __construct(VueComponent $component, $to = null, $var = null)
     {
-        if ($to === '') {
+        if ($to === null) {
             $to = \config('vue_helper.default_mount_el');
         }
 
-        if ($var === '') {
+        if ($var === null) {
             $var = \config('vue_helper.default_variable');
         }
 
@@ -60,7 +65,7 @@ class ComponentMounter extends ComponentAction
 
         $output .= "new {$this->vue}({ ";
         $output .= $this->getAdditionalEntryPairs();
-        $output .= "render: function(h) { return h('{$this->component->getName()}'{$propString}) } ";
+        $output .= "render: function (h) { return h('{$this->component->getName()}'{$propString}) } ";
         $output .= "}).\$mount('{$this->to}')\n";
         $output .= "</script>\n";
 
