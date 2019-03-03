@@ -134,7 +134,7 @@ This will be converted to:
 
 All you need to remember is to make sure that Vue is loaded before you try to mount, and that it isn’t already instantiated by another script.
 
-Like `@vue_component`, `@vue_mount` can also take a component name if you wish to use a named component rather than the default. However, it also accepts two other arguments: the selector of the element to mount to (a.k.a `$el`), and the variable to assign the root Vue instance too.
+Like `@vue_component`, `@vue_mount` can also take a component name if you wish to use a named component rather than the default. However, it also accepts two other arguments: the selector of the element to mount to (a.k.a `$el`), and the variable to assign the root Vue instance to.
 
 For example:
 
@@ -202,7 +202,7 @@ If you are using Webpack, setting up code-splitting and registering all of your 
 
 Call the helper function with no arguments to get the core service instance that the package provides.
 
-Of course, you may also access its methods via the facade `Vue::` if you’d prefer, or type hint it in your controller methods to auto-inject from the container, or grab it by name with `app(‘Mpbarlow\LaravelVueComponentHelper\VueComponentManager’)`. And, if you really don’t like singletons, there is nothing stopping you instantiating `VueComponentManager` yourself — you just won’t be able to use the Blade directives as they hook back into the manager already in the container.
+Of course, you may also access its methods via the facade `Vue::` if you’d prefer, or type hint it in your controller methods to auto-inject from the container, or grab it by name with `app(‘Mpbarlow\LaravelVueComponentHelper\VueComponentManager’)`. And, if you really don’t like singletons, there is nothing stopping you instantiating `VueComponentManager` yourself — you just won’t be able to use the Blade directives as they hook back into the instance already in the container.
 - - - -
 
 `vue(string $componentName, array $props = [], ?string $template = null, array $templateData = []) : \Illuminate\View\View`
@@ -383,6 +383,6 @@ The configuration file offers some options, as well as default values to streaml
 ];
 ```
 
-### Tests
+### Running Unit Tests
 
 `./vendor/bin/phpunit`
