@@ -5,7 +5,8 @@
     "type": "library",
     "require": {
         "php": ">=7.0",
-        "illuminate/support": ">=5.5.0"
+        "illuminate/support": ">=5.5.0",
+        "ext-json": "*"
     },
     "license": "MIT",
     "authors": [
@@ -22,6 +23,11 @@
             "src/Helpers/functions.php"
         ]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
@@ -31,5 +37,8 @@
                 "Vue": "Mpbarlow\\LaravelVueComponentHelper\\Facade"
             }
         }
+    },
+    "require-dev": {
+        "orchestra/testbench": "~3.0"
     }
 }
