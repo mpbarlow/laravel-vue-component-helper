@@ -18,12 +18,13 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->publishes([
             __DIR__ . '/config/vue_helper.php' => \config_path('vue_helper.php'),
         ]);
+
+        $this->registerBladeDirectives();
     }
 
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/config/vue_helper.php', 'vue_helper');
-        $this->registerBladeDirectives();
     }
 
     protected function registerBladeDirectives()
